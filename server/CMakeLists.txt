@@ -22,9 +22,10 @@ include_directories(${_INFRA_HEADER_DIR_})
 
 # Add sources
 set(_SOURCE_FILES_
+    ../infra/source/message.cpp
     main.cpp
     source/server.cpp
-    ../infra/source/message.cpp
+    source/connection.cpp
 )
 add_executable(${CMAKE_PROJECT_NAME} ${_SOURCE_FILES_})
 
