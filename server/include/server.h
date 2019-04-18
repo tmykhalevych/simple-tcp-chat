@@ -22,5 +22,6 @@ namespace chat {
         tcp::endpoint _endpoint;
         tcp::acceptor _acceptor;
         tcp::socket _socket;
+        boost::asio::io_service& _io;
     };
 }
