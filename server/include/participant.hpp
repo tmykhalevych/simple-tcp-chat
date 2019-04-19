@@ -8,7 +8,12 @@ namespace chat {
     {
     public:
         virtual void send(const message& msg) = 0;
+        std::string get_nickname() const noexcept {return _nickname;}
+        void set_nickname(const std::string& new_nick) noexcept {_nickname = new_nick;}
         virtual ~participant() {}
+
+    protected:
+        std::string _nickname;
     };
 
     using participant_ptr = std::shared_ptr<participant>;
