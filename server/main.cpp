@@ -3,9 +3,14 @@
 #include "server.h"
 #include "exception.hpp"
 #include "config.h" // FIXME
+#include "comm.pb.h"
 
 int main()
 {
+    // Verify that the version of the library that we linked against is
+    // compatible with the version of the headers we compiled against.
+    GOOGLE_PROTOBUF_VERIFY_VERSION;
+
     // TODO: Add reading configuration file instead of hardcoded values
 
     // IO object should be global per thread
@@ -18,6 +23,9 @@ int main()
     catch (chat::exception& exp) {
         std::cerr << "Server exception happened: " << exp.what() << "\n";
     }
+
+    // Delete all global objects allocated by libprotobuf.
+    google::protobuf::ShutdownProtobufLibrary();
 
     return 0;
 }

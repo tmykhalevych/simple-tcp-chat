@@ -1,13 +1,13 @@
 #pragma once
 #include <memory>
-#include "message.h"
+#include "comm.pb.h"
 
 namespace chat {
     // Participant abstract class for defining send(...) interface
     class participant
     {
     public:
-        virtual void send(const message& msg) = 0;
+        virtual void send(const Message& msg) = 0;
         std::string get_nickname() const noexcept {return _nickname;}
         void set_nickname(const std::string& new_nick) noexcept {_nickname = new_nick;}
         virtual ~participant() {}

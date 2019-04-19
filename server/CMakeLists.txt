@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.6)
 project(tcp-chat-server)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -pthread")
 
 # Find Boost and include dependencies
 set(Boost_USE_STATIC_LIBS ON)
@@ -25,7 +25,6 @@ include_directories(${_INFRA_HEADER_DIR_})
 
 # Add sources
 set(_SOURCE_FILES_
-    ../infra/source/message.cpp
     ../infra/source/comm.pb.cc
     main.cpp
     source/server.cpp
