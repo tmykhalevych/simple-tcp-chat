@@ -14,6 +14,9 @@ if(Boost_FOUND)
     link_directories(${Boost_LIBRARY_DIRS})
 endif(Boost_FOUND)
 
+# Find Protobuf
+find_package(Protobuf REQUIRED)
+
 # Add hesders
 set(_HEADER_DIR_ include)
 set(_INFRA_HEADER_DIR_ ../infra/include)
@@ -23,6 +26,7 @@ include_directories(${_INFRA_HEADER_DIR_})
 # Add sources
 set(_SOURCE_FILES_
     ../infra/source/message.cpp
+    ../infra/source/comm.pb.cc
     main.cpp
     source/server.cpp
     source/connection.cpp
@@ -35,7 +39,7 @@ SET(_BOOST_LIBS_
     ${Boost_THREAD_LIBRARY}
     ${Boost_REGEX_LIBRARY}
 )
-target_link_libraries(${CMAKE_PROJECT_NAME} ${_BOOST_LIBS_})
+target_link_libraries(${CMAKE_PROJECT_NAME} ${_BOOST_LIBS_} ${Protobuf_LIBRARIES})
 
 # Produce binarie
 install(TARGETS ${CMAKE_PROJECT_NAME} DESTINATION bin)
