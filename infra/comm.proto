@@ -1,0 +1,18 @@
+syntax = "proto2";
+
+package chat;
+
+message Message {
+    optional string target = 1;
+    required string payload = 2;
+}
+
+message Connect {
+    required string password = 1;
+    required string nickname = 2;
+}
+
+message Command {
+    required int32 code = 1;
+    optional string payload = 2;
+}

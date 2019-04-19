@@ -4,22 +4,27 @@
 
 ## General pre-build steps
 
-Set path to Boost folder, which should include `/lib` and `/include` subfolders, as BOOST_ROOT environment variable
+1. Set path to Boost folder, which should include `/lib` and `/include` subfolders, as BOOST_ROOT environment variable
 ```sh
 export BOOST_ROOT="path_to_built_boost"
 ```
 
-Set path to C/C++ compilers in [build.sh](./build.sh) file, if they are custom.
+2. Set path to C/C++ compilers in [build.sh](./build.sh) file, if they are custom.
 Here are values by default:
 ```sh
 C_COMPILER_PATH=/usr/bin/gcc
 CXX_COMPILER_PATH=/usr/bin/g++
 ```
 
-Install Cppcheck
+3. Install Cppcheck
 ```sh
 sudo apt-get install cppcheck
 ```
+
+4. Install Google Protocol Buffers library
+
+You can find the instruction [here](https://github.com/protocolbuffers/protobuf/blob/master/src/README.md).
+It could take a while)
 
 ## Build client/server
 
