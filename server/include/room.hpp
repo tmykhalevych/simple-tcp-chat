@@ -4,6 +4,11 @@
 #include <set>
 
 namespace chat {
+    enum class validation {
+        ok = 1,
+        invalid_nickname
+    };
+
     // Room to keep all participants together
     class room
     {
@@ -16,10 +21,27 @@ namespace chat {
             _participants.erase(patricipant);
         }
 
+        validation validate(participant_ptr participant) noexcept {
+            // TODO: Check if patricipant name is uniq
+            return validation::ok;
+        }
+
         void notify(const message& message) const noexcept {
             for(auto patricipant: _participants) {
                 patricipant->send(message);
             }
+        }
+
+        message get_err_msg(validation err) const noexcept {
+            message err_msg;
+            switch (err) {
+            case validation::invalid_nickname :
+                err_msg = message::invalid_nickname();
+                break;
+            default :
+                err_msg = message::invalid_err();
+            }
+            return err_msg;
         }
 
     private:

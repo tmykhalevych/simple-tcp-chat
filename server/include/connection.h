@@ -18,7 +18,7 @@ namespace chat {
 
         connection(tcp::socket sock, room& rm);
 
-        void establish() const noexcept;
+        void establish();
         void send(const message& msg) override;
 
     private:

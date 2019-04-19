@@ -6,8 +6,15 @@ namespace chat {
         ,_room(rm)
     {}
 
-    void connection::establish() const noexcept {
-        // TODO
+    void connection::establish() {
+        validation err = _room.validate(shared_from_this());
+        if (err == validation::ok) {
+            _room.join(shared_from_this());
+            read();
+        }
+        else {
+            send(_room.get_err_msg(err));
+        }
     }
 
     void connection::send(const message& msg) {

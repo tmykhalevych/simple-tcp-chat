@@ -16,5 +16,18 @@ namespace chat {
 
     private:
         std::string _raw;
+
+    public:
+        static message invalid_nickname() {
+            message msg;
+            // TODO
+            return msg;
+        }
+
+        static message invalid_err() {
+            message msg;
+            // TODO
+            return msg;
+        }
     };
 }
