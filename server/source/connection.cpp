@@ -7,13 +7,13 @@ namespace chat {
     {}
 
     void connection::establish() {
-        validation err = _room.validate(shared_from_this());
-        if (err == validation::ok) {
+        room::validation err = _room.validate(shared_from_this());
+        if (err == room::validation::ok) {
             _room.join(shared_from_this());
             read();
         }
         else {
-            send(_room.get_err_msg(err));
+            send(room::get_err_msg(err));
         }
     }
 

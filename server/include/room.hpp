@@ -4,11 +4,6 @@
 #include <set>
 
 namespace chat {
-    enum class validation {
-        ok = 1,
-        invalid_nickname
-    };
-
     // Room to keep all participants together
     class room
     {
@@ -21,6 +16,7 @@ namespace chat {
             _participants.erase(patricipant);
         }
 
+        enum class validation;
         validation validate(participant_ptr participant) noexcept {
             // TODO: Check if patricipant name is uniq
             return validation::ok;
@@ -32,8 +28,18 @@ namespace chat {
             }
         }
 
-        message get_err_msg(validation err) const noexcept {
+    private:
+        std::set<participant_ptr> _participants;
+
+    public:
+        enum class validation {
+            ok = 1,
+            invalid_nickname
+        };
+
+        static message get_err_msg(validation err) noexcept {
             message err_msg;
+
             switch (err) {
             case validation::invalid_nickname :
                 err_msg = message::invalid_nickname();
@@ -41,10 +47,8 @@ namespace chat {
             default :
                 err_msg = message::invalid_err();
             }
+
             return err_msg;
         }
-
-    private:
-        std::set<participant_ptr> _participants;
     };
 }
