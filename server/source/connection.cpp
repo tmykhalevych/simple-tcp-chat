@@ -6,13 +6,17 @@ namespace chat {
     connection::connection(tcp::socket sock, room& rm)
         :_socket(std::move(sock))
         ,_room(rm)
-    {}
+    {
+        LOG_SCOPE
+    }
 
     void connection::establish() {
+        LOG_SCOPE
         read_header_and(std::bind(&connection::set, this));
     }
 
     void connection::send(const Message& msg) {
+        LOG_SCOPE
         bool not_writing = _message_q.empty();
         _message_q.push_back(msg);
         if (not_writing) {
@@ -21,13 +25,14 @@ namespace chat {
     }
 
     void connection::read_header_and(std::function<void(void)> next_action) {
+        LOG_SCOPE
         auto self = shared_from_this();
         boost::asio::async_read(
             _socket,
             boost::asio::buffer(_header_buff, _header_buff_size),
             [this, self, next_action](boost::system::error_code ec, std::size_t) {
                 if (!ec) {
-                    std::cout << "<-- Got header..." << std::endl;
+                    LOG_MSG("<--- Receive <header>")
                     process_header();
                     next_action();
                 }
@@ -36,20 +41,22 @@ namespace chat {
     }
 
     void connection::process_header() {
+        LOG_SCOPE
         if (_msg_buff != nullptr) free_msg_buff();
         _msg_buff_size = ntohl(*(std::int32_t*)_header_buff); // FIXME: Only linux!
-        std::cout << "process_header... header = " << _msg_buff_size << std::endl;
+        LOG_MSG("header = " + _msg_buff_size)
         alloc_msg_buff(_msg_buff_size);
     }
 
     void connection::set() {
+        LOG_SCOPE
         auto self = shared_from_this();
         boost::asio::async_read(
             _socket,
             boost::asio::buffer(_msg_buff, _msg_buff_size),
             [this, self](boost::system::error_code ec, std::size_t bytes_transferred) {
                 if (!ec) {
-                    std::cout << "<-- Read : " << std::string(_msg_buff, _msg_buff_size) << std::endl;
+                    LOG_MSG("<--- Receive <connect>. msg = " + std::string(_msg_buff, _msg_buff_size))
                     Connect conn_req;
                     std::istringstream iss(std::string(_msg_buff, _msg_buff_size));
                     conn_req.ParseFromIstream(&iss);
@@ -68,13 +75,14 @@ namespace chat {
     }
 
     void connection::read() {
+        LOG_SCOPE
         auto self = shared_from_this();
         boost::asio::async_read(
             _socket,
             boost::asio::buffer(_msg_buff, _msg_buff_size),
             [this, self](boost::system::error_code ec, std::size_t) {
                 if (!ec) {
-                    std::cout << "<-- Read : " << std::string(_msg_buff, _msg_buff_size) << std::endl;
+                    LOG_MSG("<--- Receive <message>. msg = " + std::string(_msg_buff, _msg_buff_size))
                     Message msg;
                     std::istringstream iss(std::string(_msg_buff, _msg_buff_size));
                     msg.ParseFromIstream(&iss);
@@ -84,7 +92,7 @@ namespace chat {
                     }
                 }
                 else if (ec != boost::asio::error::operation_aborted) {
-                    std::cout << "Connection close..." << std::endl;
+                    LOG_MSG("Connection close...")
                     _room.kick(shared_from_this());
                 }
             }
@@ -92,6 +100,7 @@ namespace chat {
     }
 
     void connection::write() {
+        LOG_SCOPE
         auto self = shared_from_this();
         boost::asio::streambuf output_buff;
         std::ostream os(&output_buff);

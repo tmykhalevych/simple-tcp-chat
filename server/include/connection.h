@@ -3,6 +3,7 @@
 #include "room.hpp"
 #include "comm.pb.h"
 #include "config.h"
+#include "logger.h"
 #include <boost/asio.hpp>
 #include <array>
 #include <deque>
@@ -16,7 +17,9 @@ namespace chat {
     class connection
         : public participant // to override send(...)
         , public std::enable_shared_from_this<connection> // to pass into callbacks
+        , private Loggable
     {
+        LOG_MODULE("CON")
     public:
         connection(const connection&) = delete;
         connection& operator=(const connection&) = delete;

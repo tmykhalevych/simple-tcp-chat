@@ -3,40 +3,50 @@
 #include "message_helpers.inl"
 #include "comm.pb.h"
 #include "config.h"
+#include "logger.h"
 #include <set>
 #include <sstream>
 
 namespace chat {
     // Room to keep all participants together
     class room
+        : private Loggable
     {
+        LOG_MODULE(" RM")
     public:
         void join(participant_ptr patricipant) noexcept {
+            LOG_SCOPE
             _participants.insert(patricipant);
             std::ostringstream oss;
             oss << "New participant joined the room. Welcome @" << patricipant->get_nickname();
             notify(message::from_string(oss.str()));
+            LOG_MSG("<< @" + patricipant->get_nickname() + " entered")
         }
 
         void kick(participant_ptr patricipant) noexcept {
+            LOG_SCOPE
             _participants.erase(patricipant);
+            LOG_MSG(">> @" + patricipant->get_nickname() + " kiked out")
         }
 
         enum class validation;
         validation validate(Connect conn_req) noexcept {
+            LOG_SCOPE
             // TODO:
             // 1) Chack if password is correct
             // 2) Check if patricipant name is uniq
             return validation::ok;
         }
 
-        void notify(const Message& msg) const noexcept {
+        void notify(const Message& msg) noexcept {
+            LOG_SCOPE
             for(auto patricipant: _participants) {
                 patricipant->send(msg);
             }
         }
 
-        validation route(Message& msg, const std::string& from) const noexcept {
+        validation route(Message& msg, const std::string& from) noexcept {
+            LOG_SCOPE
             std::string target_nickname = msg.target();
             auto target = std::find_if(
                 _participants.begin(), 
