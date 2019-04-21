@@ -11,7 +11,7 @@ namespace chat {
         server(const server&) = delete;
         server& operator=(const server&) = delete;
 
-        server(boost::asio::io_service& io, const unsigned int port);
+        server(const unsigned int port);
         void run();
     
     private:
@@ -19,9 +19,9 @@ namespace chat {
 
         const int _port;
         room _room;
+        boost::asio::io_service _io;
         tcp::endpoint _endpoint;
         tcp::acceptor _acceptor;
         tcp::socket _socket;
-        boost::asio::io_service& _io;
     };
 }

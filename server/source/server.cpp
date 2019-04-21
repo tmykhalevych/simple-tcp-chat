@@ -2,9 +2,9 @@
 #include "connection.h"
 
 namespace chat {
-    server::server(boost::asio::io_service& io, const unsigned int port)
+    server::server(const unsigned int port)
         :_port(port)
-        ,_io(io)
+        ,_io(1)
         ,_socket(_io)
         ,_endpoint(tcp::v4(), _port)
         ,_acceptor(_io, _endpoint)
@@ -22,6 +22,7 @@ namespace chat {
             _socket,
             [this](boost::system::error_code err) {
                 if (!err) {
+                    std::cout << "Connection established..." << std::endl;
                     auto conn = std::make_shared<connection>(std::move(_socket), _room);
                     conn->establish();
                 }
