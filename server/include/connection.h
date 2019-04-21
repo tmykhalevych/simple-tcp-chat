@@ -15,8 +15,8 @@ using boost::asio::ip::tcp;
 namespace chat {
     // Client connection handler
     class connection
-        : public participant // to override send(...)
-        , public std::enable_shared_from_this<connection> // to pass into callbacks
+        : public participant
+        , public std::enable_shared_from_this<connection>
         , private Loggable
     {
         LOG_MODULE("CON")
@@ -28,15 +28,19 @@ namespace chat {
 
         void establish();
         void send(const Message& msg) override;
-        void read_header_and(std::function<void(void)> reader);
 
     private:
+        void read_header_and(std::function<void(void)> next_action);
         void set();
         void read();
         void write();
 
-        void alloc_msg_buff(std::size_t buff_size) { _msg_buff = (char*)malloc(buff_size); }
+        void alloc_msg_buff(std::size_t buff_size) {
+            LOG_SCOPE
+            _msg_buff = (char*)malloc(buff_size);
+        }
         void free_msg_buff() {
+            LOG_SCOPE
             free(_msg_buff);
             _msg_buff = nullptr;
         }
