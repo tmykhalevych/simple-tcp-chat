@@ -10,6 +10,13 @@ namespace chat {
         LOG_SCOPE
     }
 
+    connection::~connection() {
+        LOG_SCOPE
+        if (_msg_buff != nullptr) {
+            free_msg_buff();
+        }
+    }
+
     void connection::establish() {
         LOG_SCOPE
         read_header_and(std::bind(&connection::set, this));

@@ -25,6 +25,7 @@ namespace chat {
         connection& operator=(const connection&) = delete;
 
         connection(tcp::socket sock, room& rm);
+        ~connection();
 
         void establish();
         void send(const Message& msg) override;
