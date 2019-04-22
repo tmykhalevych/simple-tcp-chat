@@ -42,7 +42,6 @@ namespace chat {
                 if (!ec) {
                     LOG_MSG("---> Send <connect>")
                     // TODO: Add connect containings log
-                    wait_for_ack();
                 }
                 else if (ec != boost::asio::error::operation_aborted) {
                     end();
@@ -53,8 +52,30 @@ namespace chat {
 
     void client::wait_for_ack() {
         LOG_SCOPE
-
-        // TODO: if bad, join_room()
+        boost::asio::async_read(
+            _socket,
+            boost::asio::buffer(_msg_buff, _msg_buff_size),
+            [this](boost::system::error_code ec, std::size_t) {
+                if (!ec) {
+                    LOG_MSG("<--- Receive <ack>")
+                    LOG_MSG("ack = " + std::string(_msg_buff, _msg_buff_size))
+                    Message msg;
+                    std::istringstream iss(std::string(_msg_buff, _msg_buff_size));
+                    msg.ParseFromIstream(&iss);
+                    if (msg.has_payload() && msg.payload() == "true") {
+                        LOG_MSG("Gor acknoladge")
+                        read_header_and(std::bind(&client::read, this));
+                    }
+                    else {
+                        LOG_MSG("Gor reject. Try to connect once more")
+                        join_room();
+                    }
+                }
+                else if (ec != boost::asio::error::operation_aborted) {
+                    end();
+                }
+            }
+        );
     }
 
     void client::connect() {
@@ -63,9 +84,8 @@ namespace chat {
             _socket,
             _endpoint,
             [this](boost::system::error_code ec, tcp::resolver::iterator) {
-                if (!ec) {
-                    read_header_and(std::bind(&client::read, this));
-                }
+                LOG_MSG("Connection with server has been established")
+                read_header_and(std::bind(&client::wait_for_ack, this));
             }
         );
     }
@@ -98,6 +118,7 @@ namespace chat {
                     std::istringstream iss(std::string(_msg_buff, _msg_buff_size));
                     msg.ParseFromIstream(&iss);
                     _read_callback(msg);
+                    read_header_and(std::bind(&client::read, this));
                 }
                 else if (ec != boost::asio::error::operation_aborted) {
                     end();

@@ -21,6 +21,7 @@ namespace chat::message {
     inline Message parce_from_string(const std::string& str) {
         // TODO
         Message msg;
+        msg.set_payload(str);
         return msg;
     }
 }
