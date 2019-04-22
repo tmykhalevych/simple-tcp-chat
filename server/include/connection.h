@@ -55,5 +55,6 @@ namespace chat {
         char* _msg_buff = nullptr;
         std::size_t _msg_buff_size;
         std::deque<Message> _message_q;
+        std::string _client_addr;
     };
 }

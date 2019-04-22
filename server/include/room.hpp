@@ -29,12 +29,26 @@ namespace chat {
             LOG_MSG(">> @" + patricipant->get_nickname() + " kiked out")
         }
 
-        enum class validation;
+        enum class validation {
+            ok = 1,
+            invalid_nickname,
+            abscent_nickname,
+            invalid_password,
+            abscent_password,
+            invalid_target
+        };
+
         validation validate(Connect conn_req) noexcept {
             LOG_SCOPE
-            // TODO:
-            // 1) Chack if password is correct
-            // 2) Check if patricipant name is uniq
+            if (!conn_req.has_nickname()) {
+                return validation::abscent_nickname;
+            }
+            if (!conn_req.has_password()) {
+                return validation::abscent_password;
+            }
+            else if (conn_req.password() != std::to_string(_CHAT_ENTER_PASSWORD_)) {
+                return validation::invalid_password;
+            }
             return validation::ok;
         }
 
@@ -67,13 +81,6 @@ namespace chat {
         std::set<participant_ptr> _participants;
 
     public:
-        enum class validation {
-            ok = 1,
-            invalid_nickname,
-            invalid_password,
-            invalid_target
-        };
-
         static Message get_err_msg(validation err) noexcept {
             Message err_msg;
 
@@ -81,6 +88,10 @@ namespace chat {
             case validation::invalid_nickname :
                 err_msg = message::from_string("The nickname should be unique!");
                 break;
+            case validation::abscent_nickname :
+                err_msg = message::from_string("You should specify the nickname!");
+                break;
+            case validation::abscent_password :
             case validation::invalid_password :
                 err_msg = message::from_string("Invalid password!");
                 break;

@@ -25,7 +25,6 @@ namespace chat {
             _socket,
             [this](boost::system::error_code err) {
                 if (!err) {
-                    LOG_MSG("Connection established...")
                     auto conn = std::make_shared<connection>(std::move(_socket), _room);
                     conn->establish();
                 }

@@ -8,6 +8,9 @@ namespace chat {
         ,_room(rm)
     {
         LOG_SCOPE
+        std::ostringstream oss;
+        oss << _socket.remote_endpoint().address().to_string() << ":" << _socket.remote_endpoint().port();
+        _client_addr = oss.str();
     }
 
     connection::~connection() {
@@ -15,11 +18,13 @@ namespace chat {
         if (_msg_buff != nullptr) {
             free_msg_buff();
         }
+        LOG_MSG("Connection closed with " + _client_addr)
     }
 
     void connection::establish() {
         LOG_SCOPE
         read_header_and(std::bind(&connection::set, this));
+        LOG_MSG("Connection established with " + _client_addr)
     }
 
     void connection::send(const Message& msg) {
@@ -39,7 +44,7 @@ namespace chat {
             boost::asio::buffer(_header_buff, _header_buff_size),
             [this, self, next_action](boost::system::error_code ec, std::size_t) {
                 if (!ec) {
-                    LOG_MSG("<--- Receive <header>")
+                    LOG_MSG("<--- Receive <header> from " + _client_addr)
                     process_header();
                     next_action();
                 }
@@ -51,8 +56,8 @@ namespace chat {
         LOG_SCOPE
         if (_msg_buff != nullptr) free_msg_buff();
         _msg_buff_size = ntohl(*(std::int32_t*)_header_buff); // FIXME: Only linux!
-        LOG_MSG("header = " + _msg_buff_size)
         alloc_msg_buff(_msg_buff_size);
+        LOG_MSG("header = " + std::to_string(_msg_buff_size))
     }
 
     void connection::set() {
@@ -63,7 +68,8 @@ namespace chat {
             boost::asio::buffer(_msg_buff, _msg_buff_size),
             [this, self](boost::system::error_code ec, std::size_t bytes_transferred) {
                 if (!ec) {
-                    LOG_MSG("<--- Receive <connect>. msg = " + std::string(_msg_buff, _msg_buff_size))
+                    LOG_MSG("<--- Receive <connect> from " + _client_addr)
+                    LOG_MSG("connect = " + std::string(_msg_buff, _msg_buff_size))
                     Connect conn_req;
                     std::istringstream iss(std::string(_msg_buff, _msg_buff_size));
                     conn_req.ParseFromIstream(&iss);
@@ -89,7 +95,8 @@ namespace chat {
             boost::asio::buffer(_msg_buff, _msg_buff_size),
             [this, self](boost::system::error_code ec, std::size_t) {
                 if (!ec) {
-                    LOG_MSG("<--- Receive <message>. msg = " + std::string(_msg_buff, _msg_buff_size))
+                    LOG_MSG("<--- Receive <message> from " + _client_addr)
+                    LOG_MSG("message = " + std::string(_msg_buff, _msg_buff_size))
                     Message msg;
                     std::istringstream iss(std::string(_msg_buff, _msg_buff_size));
                     msg.ParseFromIstream(&iss);
@@ -99,7 +106,6 @@ namespace chat {
                     }
                 }
                 else if (ec != boost::asio::error::operation_aborted) {
-                    LOG_MSG("Connection close...")
                     _room.kick(shared_from_this());
                 }
             }
@@ -111,12 +117,15 @@ namespace chat {
         auto self = shared_from_this();
         boost::asio::streambuf output_buff;
         std::ostream os(&output_buff);
+        message::add_header(&os, _message_q.front());
         _message_q.front().SerializeToOstream(&os);
         boost::asio::async_write(
             _socket,
             output_buff,
-            [this, self](boost::system::error_code ec, std::size_t /*length*/) {
+            [this, self](boost::system::error_code ec, std::size_t) {
                 if (!ec) {
+                    LOG_MSG("---> Send message to " + _client_addr)
+                    // TODO: Add message containings log
                     _message_q.pop_front();
                     if (!_message_q.empty()) {
                         write();
