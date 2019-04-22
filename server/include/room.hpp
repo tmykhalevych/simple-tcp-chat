@@ -86,6 +86,7 @@ namespace chat {
                 }
             }
             else {
+                msg.set_target(from);
                 notify(msg);
                 return validation::ok;
             }
