@@ -100,6 +100,9 @@ namespace infra {
         infra::Logger log_scp(std::string scp) { return infra::Logger(); }
     #endif
     };
+
+    #define LOG_GLOBAL_MSG(msg) infra::Logger::log(msg, "GLB", __FILE__, __LINE__);
+    #define LOG_GLOBAL_EXP(msg) infra::Logger::log(" {EXP} " + msg, "GLB", __FILE__, __LINE__);
 #else
     class Loggable {
     protected:
@@ -108,13 +111,14 @@ namespace infra {
         void log_exp(std::string msg) {}
         infra::Logger log_scp(std::string scp) { return infra::Logger(); }
     };
+
+    #define LOG_GLOBAL_MSG(msg) {}
+    #define LOG_GLOBAL_EXP(msg) {}
 #endif
 
 #define LOG_MODULE(mdl)     std::string module() override { return mdl; }
 #define LOG_SCOPE			infra::Logger _scp_obj = log_scp(__FUNCTION__);
 #define LOG_MSG(msg)		log_msg(msg);
 #define LOG_EXP(exp)		log_exp(exp);
-#define LOG_GLOBAL_MSG(msg) infra::Logger::log(msg, "GLB", __FILE__, __LINE__);
-#define LOG_GLOBAL_EXP(msg) infra::Logger::log(" {EXP} " + msg, "GLB", __FILE__, __LINE__);
 
 #undef SRV_LOG_STACK_OFFSET_STEP
