@@ -24,7 +24,7 @@ namespace chat {
         connection(const connection&) = delete;
         connection& operator=(const connection&) = delete;
 
-        connection(tcp::socket sock, room& rm);
+        connection(tcp::socket sock, room* rm);
         ~connection();
 
         void establish();
@@ -49,7 +49,7 @@ namespace chat {
         void process_header();
 
         tcp::socket _socket;
-        room _room;
+        room* _room;
         static const int _header_buff_size = _CHAT_MSG_HEADER_SIZE_;
         char _header_buff[_header_buff_size];
         char* _msg_buff = nullptr;
