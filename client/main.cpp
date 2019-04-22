@@ -1,7 +1,7 @@
 #include <string>
 #include <sstream>
 #include <iostream>
-#include <thread>
+#include <future>
 #include <boost/asio.hpp>
 #include "comm.pb.h"
 #include "logger.h"
@@ -53,8 +53,9 @@ int main()
         );
 
         // Start client in other thread
-        std::thread client_thr(
-            [&client](){ client.run(); }
+        auto client_thr = std::async(
+            std::launch::async,
+            [&client] () -> void { client.run(); }
         );
 
         // Try to join chat room
@@ -65,8 +66,9 @@ int main()
         log.clear();
 
         std::string msg_str;
-        while (std::cin >> msg_str)
+        while (true)
         {
+            std::getline(std::cin, msg_str);
             if (msg_str == "/q") {
                 break;
             }
@@ -77,10 +79,15 @@ int main()
         }
 
         client.end();
-        client_thr.join();
+        client_thr.get();
+    }
+    // FIXME: Doesn't work, fix with promises
+    catch (chat::client::exception& e) {
+        LOG_GLOBAL_EXP(e.what())
+        return e.code();
     }
     catch (std::exception& e) {
-        // TODO: add custom client exceptions
+        LOG_GLOBAL_EXP(e.what())
         std::cerr << "Exception: " << e.what() << "\n";
     }
 

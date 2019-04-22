@@ -36,6 +36,15 @@ namespace chat {
             );
         }
 
+        struct exception {
+            exception(std::string msg, int err_code): _msg(msg), _code(err_code) {}
+            std::string what() const noexcept { return _msg; }
+            int code() const noexcept { return _code; }
+        private:
+            std::string _msg;
+            int _code;
+        };
+
     private:
         void connect();
         void wait_for_ack();

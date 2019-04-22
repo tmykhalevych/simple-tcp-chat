@@ -1,6 +1,7 @@
 #include "client.h"
 #include "logger.h"
 #include "message_helpers.inl"
+#include <iostream> // temp
 
 namespace chat {
     client::client(std::string host, std::string port)
@@ -68,7 +69,8 @@ namespace chat {
                     }
                     else {
                         LOG_MSG("Gor reject. Try to connect once more")
-                        join_room();
+                        _read_callback(msg);
+                        throw client::exception("Invalid password", 0);
                     }
                 }
                 else if (ec != boost::asio::error::operation_aborted) {
@@ -84,8 +86,15 @@ namespace chat {
             _socket,
             _endpoint,
             [this](boost::system::error_code ec, tcp::resolver::iterator) {
-                LOG_MSG("Connection with server has been established")
-                read_header_and(std::bind(&client::wait_for_ack, this));
+                if (!ec) {
+                    LOG_MSG("Connection with server has been established")
+                    read_header_and(std::bind(&client::wait_for_ack, this));
+                }
+                else {
+                    //_server_down_callback(msg);
+                    std::cout << "server is down!!" << std::endl; // temp
+                    throw client::exception("ERROR - Server is down", 0);
+                }
             }
         );
     }
