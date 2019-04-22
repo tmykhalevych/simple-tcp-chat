@@ -15,4 +15,10 @@ namespace chat::message {
         char* byte = (char*)&msg_size;
         (*os) << byte[0] << byte[1] << byte[2] << byte[3];
     }
+
+    inline Message parce_from_string(const std::string& str) {
+        // TODO
+        Message msg;
+        return msg;
+    }
 }
