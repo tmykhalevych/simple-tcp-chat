@@ -2,6 +2,7 @@
 #include <string>
 #include <ostream>
 #include "comm.pb.h"
+#include <arpa/inet.h> // FIXME: Only linux
 
 namespace chat::message {
     inline Message from_string(const std::string& str) {
@@ -12,7 +13,7 @@ namespace chat::message {
 
     template<typename MESSAGE>
     inline void add_header(std::ostream* os, MESSAGE msg) {
-        std::int32_t msg_size = static_cast<std::int32_t>(msg.ByteSizeLong());
+        std::int32_t msg_size = static_cast<std::int32_t>(htonl(msg.ByteSizeLong())); // FIXME: Only linux
         char* byte = (char*)&msg_size;
         (*os) << byte[0] << byte[1] << byte[2] << byte[3];
     }
