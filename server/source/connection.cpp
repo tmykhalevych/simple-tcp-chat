@@ -75,11 +75,14 @@ namespace chat {
                     conn_req.ParseFromIstream(&iss);
                     room::validation err = _room.validate(conn_req);
                     if (err == room::validation::ok) {
+                        LOG_MSG("Send acknoladge. User is valid")
+                        send(message::from_string("true")); // Temporary acknoledge
                         _nickname = conn_req.nickname();
                         _room.join(shared_from_this());
                         read_header_and(std::bind(&connection::read, this));
                     }
                     else {
+                        LOG_MSG("Send reject. User is invalid")
                         send(room::get_err_msg(err));
                     }
                 }
@@ -104,6 +107,7 @@ namespace chat {
                     if (err != room::validation::ok) {
                         send(room::get_err_msg(err));
                     }
+                    read_header_and(std::bind(&connection::read, this));
                 }
                 else if (ec != boost::asio::error::operation_aborted) {
                     _room.kick(shared_from_this());
@@ -124,7 +128,7 @@ namespace chat {
             output_buff,
             [this, self](boost::system::error_code ec, std::size_t) {
                 if (!ec) {
-                    LOG_MSG("---> Send message to " + _client_addr)
+                    LOG_MSG("---> Send <message> to " + _client_addr)
                     // TODO: Add message containings log
                     _message_q.pop_front();
                     if (!_message_q.empty()) {
