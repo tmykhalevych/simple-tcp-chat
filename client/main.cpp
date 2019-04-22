@@ -38,20 +38,27 @@ int main()
             }
         );
 
+        // Set join callback
+        std::string user_nickname, room_password;
+        client.on_join_room(
+            [&user_nickname, &room_password]() -> std::pair<std::string, std::string> {
+                std::cout << "Please enter your nickname: ";
+                std::cin >> user_nickname;
+                std::cout << "Please enter the room password: ";
+                std::cin >> room_password;
+                // TODO: Add quit mechanism on this step
+
+                return std::make_pair(user_nickname, room_password);
+            }
+        );
+
         // Start client in other thread
         std::thread client_thr(
             [&client](){ client.run(); }
         );
 
-        // Setup client params
-        std::string user_nickname, room_password;
-        do {
-            std::cout << "Please enter your nickname: ";
-            std::cin >> user_nickname;
-            std::cout << "Please enter the room password: ";
-            std::cin >> room_password;
-            // TODO: Add quit mechanism on this step
-        } while (!client.join_room(user_nickname, room_password));
+        // Try to join chat room
+        client.join_room();
 
         log << "Enter the chat room as [" << user_nickname << "]";
         LOG_GLOBAL_MSG(log.str())

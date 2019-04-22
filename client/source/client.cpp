@@ -22,10 +22,39 @@ namespace chat {
         }
     }
 
-    bool client::join_room(std::string nickname, std::string pass) {
+    void client::join_room() {
         LOG_SCOPE
-        // TODO
-        return false;
+
+        Connect conn_req;
+        auto user_data = _join_callback();
+        conn_req.set_nickname(user_data.first);
+        conn_req.set_password(user_data.second);
+
+        boost::asio::streambuf output_buff;
+        std::ostream os(&output_buff);
+        message::add_header(&os, conn_req);
+        conn_req.SerializeToOstream(&os);
+
+        boost::asio::async_write(
+            _socket,
+            output_buff,
+            [this](boost::system::error_code ec, std::size_t) {
+                if (!ec) {
+                    LOG_MSG("---> Send <connect>")
+                    // TODO: Add connect containings log
+                    wait_for_ack();
+                }
+                else if (ec != boost::asio::error::operation_aborted) {
+                    end();
+                }
+            }
+        );
+    }
+
+    void client::wait_for_ack() {
+        LOG_SCOPE
+
+        // TODO: if bad, join_room()
     }
 
     void client::connect() {
@@ -88,7 +117,7 @@ namespace chat {
             output_buff,
             [this](boost::system::error_code ec, std::size_t) {
                 if (!ec) {
-                    LOG_MSG("---> Send message")
+                    LOG_MSG("---> Send <message>")
                     // TODO: Add message containings log
                     _message_q.pop_front();
                     if (!_message_q.empty()) {

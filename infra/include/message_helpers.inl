@@ -10,7 +10,8 @@ namespace chat::message {
         return msg;
     }
 
-    inline void add_header(std::ostream* os, Message msg) {
+    template<typename MESSAGE>
+    inline void add_header(std::ostream* os, MESSAGE msg) {
         std::int32_t msg_size = static_cast<std::int32_t>(msg.ByteSizeLong());
         char* byte = (char*)&msg_size;
         (*os) << byte[0] << byte[1] << byte[2] << byte[3];

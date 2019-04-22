@@ -16,10 +16,14 @@ namespace chat {
         client(std::string host, std::string port);
 
         void send(Message& msg);
-        bool join_room(std::string nickname, std::string pass);
+        void join_room();
 
         void on_read_msg(std::function<void(chat::Message)> read_callback) noexcept {
             _read_callback = read_callback;
+        }
+
+        void on_join_room(std::function<std::pair<std::string, std::string>()> join_callback) noexcept {
+            _join_callback = join_callback;
         }
 
         void run() {
@@ -34,6 +38,7 @@ namespace chat {
 
     private:
         void connect();
+        void wait_for_ack();
         void read_header_and(std::function<void(void)> next_action);
         void read();
         void write();
@@ -58,6 +63,7 @@ namespace chat {
         tcp::resolver::iterator _endpoint;
         tcp::socket _socket;
         std::function<void(chat::Message)> _read_callback;
+        std::function<std::pair<std::string, std::string>()> _join_callback;
         static const int _header_buff_size = _CHAT_MSG_HEADER_SIZE_;
         char _header_buff[_header_buff_size];
         char* _msg_buff = nullptr;
