@@ -3,7 +3,7 @@
 #include <sstream>
 
 namespace chat {
-    connection::connection(tcp::socket sock, room& rm)
+    connection::connection(tcp::socket sock, room* rm)
         :_socket(std::move(sock))
         ,_room(rm)
     {
@@ -73,12 +73,12 @@ namespace chat {
                     Connect conn_req;
                     std::istringstream iss(std::string(_msg_buff, _msg_buff_size));
                     conn_req.ParseFromIstream(&iss);
-                    room::validation err = _room.validate(conn_req);
+                    room::validation err = _room->validate(conn_req);
                     if (err == room::validation::ok) {
                         LOG_MSG("Send acknoladge. User is valid")
                         send(message::from_string("true")); // Temporary acknoledge
                         _nickname = conn_req.nickname();
-                        _room.join(shared_from_this());
+                        _room->join(shared_from_this());
                         read_header_and(std::bind(&connection::read, this));
                     }
                     else {
@@ -103,14 +103,14 @@ namespace chat {
                     Message msg;
                     std::istringstream iss(std::string(_msg_buff, _msg_buff_size));
                     msg.ParseFromIstream(&iss);
-                    room::validation err = _room.route(msg, get_nickname());
+                    room::validation err = _room->route(msg, get_nickname());
                     if (err != room::validation::ok) {
                         send(room::get_err_msg(err));
                     }
                     read_header_and(std::bind(&connection::read, this));
                 }
                 else if (ec != boost::asio::error::operation_aborted) {
-                    _room.kick(shared_from_this());
+                    _room->kick(shared_from_this());
                 }
             }
         );
@@ -136,7 +136,7 @@ namespace chat {
                     }
                 }
                 else if (ec != boost::asio::error::operation_aborted) {
-                    _room.kick(shared_from_this());
+                    _room->kick(shared_from_this());
                 }
             }
         );

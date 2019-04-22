@@ -14,6 +14,14 @@ namespace chat {
     {
         LOG_MODULE(" RM")
     public:
+        room(const room&) = delete;
+        room& operator=(const room&) = delete;
+
+        room() {
+            LOG_SCOPE
+            LOG_MSG("Chat room has been created")
+        }
+
         void join(participant_ptr patricipant) noexcept {
             LOG_SCOPE
             _participants.insert(patricipant);

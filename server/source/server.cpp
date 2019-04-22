@@ -25,7 +25,7 @@ namespace chat {
             _socket,
             [this](boost::system::error_code err) {
                 if (!err) {
-                    auto conn = std::make_shared<connection>(std::move(_socket), _room);
+                    auto conn = std::make_shared<connection>(std::move(_socket), &_room);
                     conn->establish();
                 }
 
