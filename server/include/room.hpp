@@ -61,19 +61,25 @@ namespace chat {
 
         validation route(Message& msg, const std::string& from) noexcept {
             LOG_SCOPE
-            std::string target_nickname = msg.target();
-            auto target = std::find_if(
-                _participants.begin(), 
-                _participants.end(),
-                [target_nickname](auto elem){ return elem->get_nickname() == target_nickname; }
-            );
-            if (target != _participants.end()) {
-                msg.set_target(from);
-                (*target)->send(msg);
-                return validation::ok;
+            if (msg.has_target()) {
+                std::string target_nickname = msg.target();
+                auto target = std::find_if(
+                    _participants.begin(), 
+                    _participants.end(),
+                    [target_nickname](auto elem){ return elem->get_nickname() == target_nickname; }
+                );
+                if (target != _participants.end()) {
+                    msg.set_target(from);
+                    (*target)->send(msg);
+                    return validation::ok;
+                }
+                else {
+                    return validation::invalid_target;
+                }
             }
             else {
-                return validation::invalid_target;
+                notify(msg);
+                return validation::ok;
             }
         }
 
