@@ -107,6 +107,7 @@ namespace chat {
                             msg.clear_target();
                             msg.set_payload(oss.str());
                             (*target)->send(msg);
+                            return validation::ok;
                         }
                     }
                 }
