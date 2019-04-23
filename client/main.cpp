@@ -69,6 +69,11 @@ int main()
         std::string msg_str;
         while (true)
         {
+            // Get exception from the client_thr
+            if (auto ep = client.get_last_exp()) {
+                throw ep;
+            }
+
             std::getline(std::cin, msg_str);
             if (msg_str == "/q") {
                 break;
@@ -82,9 +87,9 @@ int main()
         client.end();
         client_thr.get();
     }
-    // FIXME: Doesn't work, fix with promises
     catch (chat::client::exception& e) {
         //LOG_GLOBAL_EXP(e.what())
+        std::cout << e.what() << std::endl;
         return e.code();
     }
     catch (std::exception& e) {

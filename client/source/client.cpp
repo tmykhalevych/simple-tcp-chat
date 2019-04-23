@@ -8,6 +8,7 @@ namespace chat {
         : _io(1)
         , _socket(_io)
         , _resolver(_io)
+        , _last_exp()
     {
         LOG_SCOPE
         _endpoint = _resolver.resolve({host, port});
@@ -70,7 +71,7 @@ namespace chat {
                     else {
                         LOG_MSG("Gor reject. Try to connect once more")
                         _read_callback(msg);
-                        throw client::exception("Invalid password", 0);
+                        _last_exp = client::exception("", 0);
                     }
                 }
                 else if (ec != boost::asio::error::operation_aborted) {
@@ -92,8 +93,7 @@ namespace chat {
                 }
                 else {
                     //_server_down_callback(msg);
-                    std::cout << "server is down!!" << std::endl; // temp
-                    throw client::exception("ERROR - Server is down", 0);
+                    _last_exp = client::exception("ERROR - Server is down", 0);
                 }
             }
         );
