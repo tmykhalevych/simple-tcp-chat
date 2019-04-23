@@ -29,6 +29,7 @@ namespace chat {
 
         void establish();
         void send(const Message& msg) override;
+        void release() override;
 
     private:
         void read_header_and(std::function<void(void)> next_action);

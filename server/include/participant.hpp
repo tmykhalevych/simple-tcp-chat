@@ -8,6 +8,7 @@ namespace chat {
     {
     public:
         virtual void send(const Message& msg) = 0;
+        virtual void release() = 0;
         std::string get_nickname() const noexcept {return _nickname;}
         void set_nickname(const std::string& new_nick) noexcept {_nickname = new_nick;}
         virtual ~participant() {}
