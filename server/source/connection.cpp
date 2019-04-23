@@ -141,4 +141,9 @@ namespace chat {
             }
         );
     }
+
+    void connection::release() {
+        LOG_MSG("Releasing connection with " + _client_addr)
+        _socket.close(); // Ignore error code, just for simplifying
+    }
 }

@@ -36,6 +36,7 @@ namespace chat {
             std::ostringstream oss;
             oss << "Participant @" << patricipant->get_nickname() << " has been kicked from the room. Good bye.";
             notify(message::from_string(oss.str()));
+            patricipant->release();
             _participants.erase(patricipant);
             LOG_MSG(">> @" + patricipant->get_nickname() + " kiked out")
         }
@@ -110,7 +111,7 @@ namespace chat {
                     }
                 }
                 else {
-                    // For future using: Sending message to separate client
+                    // addon: Sending message to separate client
                     std::string target_nickname = msg.target();
                     auto target = std::find_if(
                         _participants.begin(), 
@@ -118,7 +119,9 @@ namespace chat {
                         [target_nickname](auto elem){ return elem->get_nickname() == target_nickname; }
                     );
                     if (target != _participants.end()) {
-                        msg.set_target(from);
+                        std::ostringstream oss;
+                        oss << from << ":private";
+                        msg.set_target(oss.str());
                         (*target)->send(msg);
                         return validation::ok;
                     }
