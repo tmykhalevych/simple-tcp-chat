@@ -110,6 +110,9 @@ namespace chat {
                     process_header();
                     next_action();
                 }
+                else if (ec != boost::asio::error::operation_aborted) {
+                    end();
+                }
             }
         );
     }
