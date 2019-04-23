@@ -88,12 +88,12 @@ int main()
         client_thr.get();
     }
     catch (chat::client::exception& e) {
-        LOG_GLOBAL_EXP(std::to_string(e.what()))
+        LOG_GLOBAL_EXP(e.what())
         std::cout << e.what() << std::endl;
         return e.code();
     }
     catch (std::exception& e) {
-        LOG_GLOBAL_EXP(std::to_string(e.what()))
+        LOG_GLOBAL_EXP(std::string(e.what()))
         std::cerr << "Exception: " << e.what() << "\n";
     }
 
