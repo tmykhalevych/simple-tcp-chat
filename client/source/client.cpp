@@ -1,7 +1,13 @@
 #include "client.h"
 #include "logger.h"
 #include "message_helpers.inl"
-#include <iostream> // temp
+
+// For ntohl(...) using
+#ifdef _WIN32
+#include <winsock.h>
+#else
+#include <arpa/inet.h>
+#endif
 
 namespace chat {
     client::client(std::string host, std::string port)
@@ -9,6 +15,7 @@ namespace chat {
         , _socket(_io)
         , _resolver(_io)
         , _last_exp()
+        , _msg_buff()
     {
         LOG_SCOPE
         _endpoint = _resolver.resolve({host, port});
@@ -56,13 +63,14 @@ namespace chat {
         LOG_SCOPE
         boost::asio::async_read(
             _socket,
-            boost::asio::buffer(_msg_buff, _msg_buff_size),
+            boost::asio::buffer(_msg_buff.begin(), _msg_buff.size()),
             [this](boost::system::error_code ec, std::size_t) {
                 if (!ec) {
                     LOG_MSG("<--- Receive <ack>")
-                    LOG_MSG("ack = " + std::string(_msg_buff, _msg_buff_size))
+                    std::string str_msg = std::string(_msg_buff.begin(), _msg_buff.size());
+                    LOG_MSG("ack = " + str_msg)
                     Message msg;
-                    std::istringstream iss(std::string(_msg_buff, _msg_buff_size));
+                    std::istringstream iss(str_msg);
                     msg.ParseFromIstream(&iss);
                     if (msg.has_payload() && msg.payload() == "true") {
                         LOG_MSG("Gor acknoladge")
@@ -92,7 +100,6 @@ namespace chat {
                     read_header_and(std::bind(&client::wait_for_ack, this));
                 }
                 else {
-                    //_server_down_callback(msg);
                     _last_exp = client::exception("ERROR - Server is down", 0);
                 }
             }
@@ -110,6 +117,9 @@ namespace chat {
                     process_header();
                     next_action();
                 }
+                else if (ec != boost::asio::error::operation_aborted) {
+                    end();
+                }
             }
         );
     }
@@ -118,13 +128,14 @@ namespace chat {
         LOG_SCOPE
         boost::asio::async_read(
             _socket,
-            boost::asio::buffer(_msg_buff, _msg_buff_size),
+            boost::asio::buffer(_msg_buff.begin(), _msg_buff.size()),
             [this](boost::system::error_code ec, std::size_t) {
                 if (!ec) {
                     LOG_MSG("<--- Receive <message>")
-                    LOG_MSG("message = " + std::string(_msg_buff, _msg_buff_size))
+                    std::string str_msg = std::string(_msg_buff.begin(), _msg_buff.size());
+                    LOG_MSG("message = " + str_msg)
                     Message msg;
-                    std::istringstream iss(std::string(_msg_buff, _msg_buff_size));
+                    std::istringstream iss(str_msg);
                     msg.ParseFromIstream(&iss);
                     _read_callback(msg);
                     read_header_and(std::bind(&client::read, this));
@@ -163,9 +174,7 @@ namespace chat {
 
     void client::process_header() {
         LOG_SCOPE
-        if (_msg_buff != nullptr) free_msg_buff();
-        _msg_buff_size = ntohl(*(std::int32_t*)_header_buff); // FIXME: Only linux!
-        alloc_msg_buff(_msg_buff_size);
-        LOG_MSG("header = " + std::to_string(_msg_buff_size))
+        _msg_buff.realloc(ntohl(*(std::int32_t*)_header_buff));
+        LOG_MSG("header = " + std::to_string(_msg_buff.size()))
     }
 }

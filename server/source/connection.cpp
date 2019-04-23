@@ -2,6 +2,13 @@
 #include "comm.pb.h"
 #include <sstream>
 
+// For ntohl(...) using
+#ifdef _WIN32
+#include <winsock.h>
+#else
+#include <arpa/inet.h>
+#endif
+
 namespace chat {
     connection::connection(tcp::socket sock, room* rm)
         :_socket(std::move(sock))
@@ -58,7 +65,7 @@ namespace chat {
     void connection::process_header() {
         LOG_SCOPE
         if (_msg_buff != nullptr) free_msg_buff();
-        _msg_buff_size = ntohl(*(std::int32_t*)_header_buff); // FIXME: Only linux!
+        _msg_buff_size = ntohl(*(std::int32_t*)_header_buff);
         alloc_msg_buff(_msg_buff_size);
         LOG_MSG("header = " + std::to_string(_msg_buff_size))
     }

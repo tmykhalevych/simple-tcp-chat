@@ -7,7 +7,7 @@
 #include "logger.h"
 #include "comm.pb.h"
 #include "client.h"
-#include "config.h" // FIXME: Server header
+#include "config.h"
 #include "message_helpers.inl"
 
 #define _SERVER_HOST_ "localhost"
@@ -88,12 +88,12 @@ int main()
         client_thr.get();
     }
     catch (chat::client::exception& e) {
-        //LOG_GLOBAL_EXP(e.what())
+        LOG_GLOBAL_EXP(std::to_string(e.what()))
         std::cout << e.what() << std::endl;
         return e.code();
     }
     catch (std::exception& e) {
-        //LOG_GLOBAL_EXP(e.what())
+        LOG_GLOBAL_EXP(std::to_string(e.what()))
         std::cerr << "Exception: " << e.what() << "\n";
     }
 
