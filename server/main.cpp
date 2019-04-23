@@ -1,8 +1,8 @@
 #include <boost/asio.hpp>
-#include <iostream> // Only for cerr
+#include <iostream>
 #include "server.h"
 #include "exception.hpp"
-#include "config.h" // FIXME
+#include "config.h"
 #include "comm.pb.h"
 #include "logger.h"
 
