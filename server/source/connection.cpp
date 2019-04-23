@@ -2,10 +2,18 @@
 #include "comm.pb.h"
 #include <sstream>
 
+// For ntohl(...) using
+#ifdef _WIN32
+#include <winsock.h>
+#else
+#include <arpa/inet.h>
+#endif
+
 namespace chat {
     connection::connection(tcp::socket sock, room* rm)
         :_socket(std::move(sock))
         ,_room(rm)
+        , _msg_buff()
     {
         LOG_SCOPE
         std::ostringstream oss;
@@ -15,9 +23,6 @@ namespace chat {
 
     connection::~connection() {
         LOG_SCOPE
-        if (_msg_buff != nullptr) {
-            free_msg_buff();
-        }
         LOG_MSG("Connection closed with " + _client_addr)
     }
 
@@ -48,16 +53,17 @@ namespace chat {
                     process_header();
                     next_action();
                 }
+                else if (ec != boost::asio::error::operation_aborted) {
+                    _room->kick(shared_from_this());
+                }
             }
         );
     }
 
     void connection::process_header() {
         LOG_SCOPE
-        if (_msg_buff != nullptr) free_msg_buff();
-        _msg_buff_size = ntohl(*(std::int32_t*)_header_buff); // FIXME: Only linux!
-        alloc_msg_buff(_msg_buff_size);
-        LOG_MSG("header = " + std::to_string(_msg_buff_size))
+        _msg_buff.realloc(ntohl(*(std::int32_t*)_header_buff));
+        LOG_MSG("header = " + std::to_string(_msg_buff.size()))
     }
 
     void connection::set() {
@@ -65,18 +71,19 @@ namespace chat {
         auto self = shared_from_this();
         boost::asio::async_read(
             _socket,
-            boost::asio::buffer(_msg_buff, _msg_buff_size),
+            boost::asio::buffer(_msg_buff.begin(), _msg_buff.size()),
             [this, self](boost::system::error_code ec, std::size_t bytes_transferred) {
                 if (!ec) {
                     LOG_MSG("<--- Receive <connect> from " + _client_addr)
-                    LOG_MSG("connect = " + std::string(_msg_buff, _msg_buff_size))
+                    std::string str_msg = std::string(_msg_buff.begin(), _msg_buff.size());
+                    LOG_MSG("connect = " + str_msg)
                     Connect conn_req;
-                    std::istringstream iss(std::string(_msg_buff, _msg_buff_size));
+                    std::istringstream iss(str_msg);
                     conn_req.ParseFromIstream(&iss);
                     room::validation err = _room->validate(conn_req);
                     if (err == room::validation::ok) {
                         LOG_MSG("Send acknoladge. User is valid")
-                        send(message::from_string("true")); // Temporary acknoledge
+                        send(message::from_string("true")); // acknowledge for client
                         _nickname = conn_req.nickname();
                         _room->join(shared_from_this());
                         read_header_and(std::bind(&connection::read, this));
@@ -85,6 +92,9 @@ namespace chat {
                         LOG_MSG("Send reject. User is invalid")
                         send(room::get_err_msg(err));
                     }
+                }
+                else if (ec != boost::asio::error::operation_aborted) {
+                    _room->kick(shared_from_this());
                 }
             }
         );
@@ -95,13 +105,14 @@ namespace chat {
         auto self = shared_from_this();
         boost::asio::async_read(
             _socket,
-            boost::asio::buffer(_msg_buff, _msg_buff_size),
+            boost::asio::buffer(_msg_buff.begin(), _msg_buff.size()),
             [this, self](boost::system::error_code ec, std::size_t) {
                 if (!ec) {
                     LOG_MSG("<--- Receive <message> from " + _client_addr)
-                    LOG_MSG("message = " + std::string(_msg_buff, _msg_buff_size))
+                    std::string str_msg = std::string(_msg_buff.begin(), _msg_buff.size());
+                    LOG_MSG("message = " + str_msg)
                     Message msg;
-                    std::istringstream iss(std::string(_msg_buff, _msg_buff_size));
+                    std::istringstream iss(str_msg);
                     msg.ParseFromIstream(&iss);
                     room::validation err = _room->route(msg, get_nickname());
                     if (err != room::validation::ok) {

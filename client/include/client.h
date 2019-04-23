@@ -2,7 +2,7 @@
 #include "logger.h"
 #include <boost/asio.hpp>
 #include <functional>
-#include "config.h" // FIXME: Server header
+#include "config.h"
 #include "comm.pb.h"
 #include "dynamic_buff.h"
 

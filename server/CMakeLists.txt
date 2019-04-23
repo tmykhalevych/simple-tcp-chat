@@ -31,9 +31,11 @@ include_directories(${_INFRA_HEADER_DIR_})
 set(_SOURCE_FILES_
     ../infra/source/comm.pb.cc
     ../infra/source/logger.cpp
+    ../infra/source/dynamic_buff.cpp
     main.cpp
     source/server.cpp
     source/connection.cpp
+    source/room.cpp
 )
 add_executable(${CMAKE_PROJECT_NAME} ${_SOURCE_FILES_})
 

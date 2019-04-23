@@ -1,6 +1,6 @@
 #pragma once
 #include "participant.hpp"
-#include "room.hpp"
+#include "room.h"
 #include "comm.pb.h"
 #include "config.h"
 #include "logger.h"
@@ -9,6 +9,7 @@
 #include <deque>
 #include <functional>
 #include <cstring>
+#include "dynamic_buff.h"
 
 using boost::asio::ip::tcp;
 
@@ -37,24 +38,16 @@ namespace chat {
         void read();
         void write();
 
-        void alloc_msg_buff(std::size_t buff_size) {
-            LOG_SCOPE
-            _msg_buff = (char*)malloc(buff_size);
-        }
-        void free_msg_buff() {
-            LOG_SCOPE
-            free(_msg_buff);
-            _msg_buff = nullptr;
-        }
-
         void process_header();
 
         tcp::socket _socket;
         room* _room;
+
         static const int _header_buff_size = _CHAT_MSG_HEADER_SIZE_;
         char _header_buff[_header_buff_size];
-        char* _msg_buff = nullptr;
-        std::size_t _msg_buff_size;
+
+        infra::dynamic_buffer _msg_buff;
+
         std::deque<Message> _message_q;
         std::string _client_addr;
     };

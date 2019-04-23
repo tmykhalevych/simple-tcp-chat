@@ -1,6 +1,6 @@
 #pragma once
 #include <boost/asio.hpp>
-#include "room.hpp"
+#include "room.h"
 #include "logger.h"
 
 using boost::asio::ip::tcp;

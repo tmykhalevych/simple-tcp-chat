@@ -1,7 +1,13 @@
 #include "client.h"
 #include "logger.h"
 #include "message_helpers.inl"
-#include <iostream> // temp
+
+// For ntohl(...) using
+#ifdef _WIN32
+#include <winsock.h>
+#else
+#include <arpa/inet.h>
+#endif
 
 namespace chat {
     client::client(std::string host, std::string port)
@@ -94,7 +100,6 @@ namespace chat {
                     read_header_and(std::bind(&client::wait_for_ack, this));
                 }
                 else {
-                    //_server_down_callback(msg);
                     _last_exp = client::exception("ERROR - Server is down", 0);
                 }
             }
