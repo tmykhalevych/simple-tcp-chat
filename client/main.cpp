@@ -83,11 +83,11 @@ int main()
     }
     // FIXME: Doesn't work, fix with promises
     catch (chat::client::exception& e) {
-        LOG_GLOBAL_EXP(e.what())
+        //LOG_GLOBAL_EXP(e.what())
         return e.code();
     }
     catch (std::exception& e) {
-        LOG_GLOBAL_EXP(e.what())
+        //LOG_GLOBAL_EXP(e.what())
         std::cerr << "Exception: " << e.what() << "\n";
     }
 
