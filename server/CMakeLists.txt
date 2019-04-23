@@ -35,6 +35,7 @@ set(_SOURCE_FILES_
     main.cpp
     source/server.cpp
     source/connection.cpp
+    source/room.cpp
 )
 add_executable(${CMAKE_PROJECT_NAME} ${_SOURCE_FILES_})
 
