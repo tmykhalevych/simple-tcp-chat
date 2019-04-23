@@ -6,8 +6,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -pthread")
 
 # Enable logging
-add_definitions(-D_LOG_ON)
-add_definitions(-D_SCOPE_LOG_ON)
+#add_definitions(-D_LOG_ON)
+#add_definitions(-D_SCOPE_LOG_ON)
 
 # Find Boost and include dependencies
 set(Boost_USE_STATIC_LIBS ON)
