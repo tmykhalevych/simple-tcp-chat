@@ -102,7 +102,7 @@ namespace infra {
     };
 
     #define LOG_GLOBAL_MSG(msg) infra::Logger::log(msg, "GLB", __FILE__, __LINE__);
-    #define LOG_GLOBAL_EXP(msg) infra::Logger::log(" {EXP} " + msg, "GLB", __FILE__, __LINE__);
+    #define LOG_GLOBAL_EXP(msg) infra::Logger::log(" {EXP} " + (msg), "GLB", __FILE__, __LINE__);
 #else
     class Loggable {
     protected:
@@ -116,7 +116,7 @@ namespace infra {
     #define LOG_GLOBAL_EXP(msg) {}
 #endif
 
-#define LOG_MODULE(mdl)     std::string module() override { return mdl; }
+#define LOG_MODULE(mdl)     std::string module() override { return (mdl); }
 #define LOG_SCOPE			infra::Logger _scp_obj = log_scp(__FUNCTION__);
 #define LOG_MSG(msg)		log_msg(msg);
 #define LOG_EXP(exp)		log_exp(exp);
