@@ -132,7 +132,16 @@ namespace chat {
             }
             else {
                 msg.set_target(from);
-                notify(msg);
+                auto others = _participants; // To erase itself
+                auto self = std::find_if(
+                    others.begin(), 
+                    others.end(),
+                    [from](auto elem){ return elem->get_nickname() == from; }
+                );
+                if (self != _participants.end()) { // Just in case
+                    others.erase(self);
+                }
+                send(others, msg);
                 return validation::ok;
             }
         }
