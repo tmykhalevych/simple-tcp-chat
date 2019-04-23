@@ -20,7 +20,7 @@ int main()
         server.run();
     }
     catch (chat::exception& exp) {
-        LOG_GLOBAL_EXP(std::string("Server exception happened: ") + exp.what())
+        LOG_GLOBAL_EXP("Server exception happened: " + std::string(exp.what()))
         std::cerr << "Server exception happened: " << exp.what() << "\n";
     }
 
