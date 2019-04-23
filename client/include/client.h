@@ -37,13 +37,20 @@ namespace chat {
         }
 
         struct exception {
-            exception(std::string msg, int err_code): _msg(msg), _code(err_code) {}
+            exception(): _real(false) {}
+            exception(std::string msg, int err_code): _msg(msg), _code(err_code), _real(true) {}
             std::string what() const noexcept { return _msg; }
             int code() const noexcept { return _code; }
+            operator bool() { return _real; }
         private:
             std::string _msg;
             int _code;
+            bool _real;
         };
+
+        exception get_last_exp() const noexcept {
+            return _last_exp;
+        }
 
     private:
         void connect();
@@ -78,5 +85,6 @@ namespace chat {
         char* _msg_buff = nullptr;
         std::size_t _msg_buff_size;
         std::deque<Message> _message_q;
+        exception _last_exp;
     };
 }
