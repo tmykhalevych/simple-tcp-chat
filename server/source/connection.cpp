@@ -48,6 +48,9 @@ namespace chat {
                     process_header();
                     next_action();
                 }
+                else if (ec != boost::asio::error::operation_aborted) {
+                    _room->kick(shared_from_this());
+                }
             }
         );
     }
@@ -85,6 +88,9 @@ namespace chat {
                         LOG_MSG("Send reject. User is invalid")
                         send(room::get_err_msg(err));
                     }
+                }
+                else if (ec != boost::asio::error::operation_aborted) {
+                    _room->kick(shared_from_this());
                 }
             }
         );
