@@ -52,15 +52,31 @@ namespace chat {
 
         validation validate(Connect conn_req) noexcept {
             LOG_SCOPE
+            // Nickname validation
             if (!conn_req.has_nickname()) {
                 return validation::abscent_nickname;
             }
+            else {
+                std::string nickname = conn_req.nickname();
+                auto participant = find_if(
+                    _participants.begin(),
+                    _participants.end(),
+                    [nickname](auto elem){ return elem->get_nickname() == nickname; }
+                );
+                if (participant != _participants.end()) {
+                    // Nickname is not unique
+                    return validation::invalid_nickname;
+                }
+            }
+
+            // Password validation
             if (!conn_req.has_password()) {
                 return validation::abscent_password;
             }
             else if (conn_req.password() != std::to_string(_CHAT_ENTER_PASSWORD_)) {
                 return validation::invalid_password;
             }
+
             return validation::ok;
         }
 

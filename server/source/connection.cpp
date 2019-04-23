@@ -83,7 +83,7 @@ namespace chat {
                     room::validation err = _room->validate(conn_req);
                     if (err == room::validation::ok) {
                         LOG_MSG("Send acknoladge. User is valid")
-                        send(message::from_string("true")); // Temporary acknoledge
+                        send(message::from_string("true")); // acknowledge for client
                         _nickname = conn_req.nickname();
                         _room->join(shared_from_this());
                         read_header_and(std::bind(&connection::read, this));
