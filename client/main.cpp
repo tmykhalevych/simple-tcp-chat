@@ -46,7 +46,8 @@ int main()
                 std::cin >> user_nickname;
                 std::cout << "Please enter the room password: ";
                 std::cin >> room_password;
-                // TODO: Add quit mechanism on this step
+                // The lightest solution to avoid catching '\n' by next getline(...)
+                std::cin.ignore(256, '\n');
 
                 return std::make_pair(user_nickname, room_password);
             }
