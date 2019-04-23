@@ -1,6 +1,6 @@
 #pragma once
 #include "participant.hpp"
-#include "room.hpp"
+#include "room.h"
 #include "comm.pb.h"
 #include "config.h"
 #include "logger.h"
