@@ -34,6 +34,7 @@ namespace chat {
             _io.post(
                 [this](){ _socket.close(); }
             );
+            _last_exp = client::exception("Connection is broken", 0);
         }
 
         struct exception {
