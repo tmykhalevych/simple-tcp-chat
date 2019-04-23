@@ -31,6 +31,7 @@ include_directories(${_INFRA_HEADER_DIR_})
 set(_SOURCE_FILES_
     ../infra/source/comm.pb.cc
     ../infra/source/logger.cpp
+    ../infra/source/dynamic_buff.cpp
     main.cpp
     source/server.cpp
     source/connection.cpp
