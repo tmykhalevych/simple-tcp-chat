@@ -6,17 +6,20 @@
 #include "comm.pb.h"
 #include "logger.h"
 
-int main()
+int main(int argc, char** argv)
 {
     // Verify that the version of the library that we linked against is
     // compatible with the version of the headers we compiled against.
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-    // TODO: Add reading configuration file instead of hardcoded values
+    std::string server_port = _CHAT_SERVER_DEFAULT_PORT_;
+    if (argc >= 2) {
+        server_port = argv[1];
+    }
 
     try {
-        LOG_GLOBAL_MSG("Start chatting server on " + std::to_string(_CHAT_SERVER_PORT_) + " port...")
-        chat::server server(_CHAT_SERVER_PORT_);
+        LOG_GLOBAL_MSG("Start chatting server on " + server_port + " port...")
+        chat::server server(server_port);
         server.run();
     }
     catch (chat::exception& exp) {

@@ -48,7 +48,7 @@ namespace chat {
         if (!conn_req.has_password()) {
             return room::validation::abscent_password;
         }
-        else if (conn_req.password() != std::to_string(_CHAT_ENTER_PASSWORD_)) {
+        else if (conn_req.password() != _CHAT_SERVER_ENTER_PASSWORD_) {
             return room::validation::invalid_password;
         }
 

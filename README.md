@@ -46,3 +46,16 @@ To clean all build artifacts run (you can use `--clean` argument instead of `-c`
 ./build.sh server -c
 ./build.sh client -c
 ```
+## Configuration
+
+Default solution configurations are defined in [server/include/config.h](./server/include/config.h).
+
+But, you can specify basic client/server configuration as params:
+1. Run server on a custon port:
+```sh
+./server/buid/bin/tcp-chat-server <port>
+```
+2. Specify server host and port when running client:
+```sh
+./client/buid/bin/tcp-chat-client <server_host> <server_port>
+```

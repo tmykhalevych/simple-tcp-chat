@@ -71,7 +71,7 @@ namespace chat {
         std::function<void(chat::Message)> _read_callback;
         std::function<std::pair<std::string, std::string>()> _join_callback;
 
-        static const int _header_buff_size = _CHAT_MSG_HEADER_SIZE_;
+        static const int _header_buff_size = _CHAT_SERVER_MSG_HEADER_SIZE_;
         char _header_buff[_header_buff_size];
 
         infra::dynamic_buffer _msg_buff;

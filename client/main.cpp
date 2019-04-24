@@ -10,19 +10,24 @@
 #include "config.h"
 #include "message_helpers.inl"
 
-#define _SERVER_HOST_ "localhost"
-
-int main()
+int main(int argc, char** argv)
 {
     // Verify that the version of the library that we linked against is
     // compatible with the version of the headers we compiled against.
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
+    std::string server_host = _CHAT_SERVER_DEFAULT_HOST_;
+    std::string server_port = _CHAT_SERVER_DEFAULT_PORT_;
+    if (argc >= 3) {
+        server_host = argv[1];
+        server_port = argv[2];
+    }
+
     try {
         // TODO: Add configuring host
-        chat::client client(_SERVER_HOST_, std::to_string(_CHAT_SERVER_PORT_));
+        chat::client client(server_host, server_port);
         std::ostringstream log;
-        log << "Start client. Try to connect to " << _SERVER_HOST_ << ":" << _CHAT_SERVER_PORT_ << "...";
+        log << "Start client. Try to connect to " << server_host << ":" << server_port << "...";
         LOG_GLOBAL_MSG(log.str())
         log.clear();
 

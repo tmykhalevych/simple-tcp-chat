@@ -1,9 +1,10 @@
 #include "server.h"
 #include "connection.h"
+#include <cstdlib>
 
 namespace chat {
-    server::server(const unsigned int port)
-        :_port(port)
+    server::server(const std::string& port)
+        :_port(atoi(port.c_str()))
         ,_io(1)
         ,_socket(_io)
         ,_endpoint(tcp::v4(), _port)

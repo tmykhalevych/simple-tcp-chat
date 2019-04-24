@@ -43,7 +43,7 @@ namespace chat {
         tcp::socket _socket;
         room* _room;
 
-        static const int _header_buff_size = _CHAT_MSG_HEADER_SIZE_;
+        static const int _header_buff_size = _CHAT_SERVER_MSG_HEADER_SIZE_;
         char _header_buff[_header_buff_size];
 
         infra::dynamic_buffer _msg_buff;

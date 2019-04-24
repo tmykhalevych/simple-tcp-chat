@@ -2,6 +2,7 @@
 #include <boost/asio.hpp>
 #include "room.h"
 #include "logger.h"
+#include <string>
 
 using boost::asio::ip::tcp;
 
@@ -14,7 +15,7 @@ namespace chat {
         server(const server&) = delete;
         server& operator=(const server&) = delete;
 
-        server(const unsigned int port);
+        server(const std::string& port);
         void run();
     
     private:
