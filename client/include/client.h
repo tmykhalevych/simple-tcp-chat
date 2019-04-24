@@ -14,7 +14,7 @@ namespace chat {
     {
         LOG_MODULE("CLN")
     public:
-        client(std::string host, std::string port);
+        client(boost::asio::io_service& io, std::string host, std::string port);
 
         void send(Message& msg);
         void join_room();
@@ -63,7 +63,7 @@ namespace chat {
 
         void process_header();
 
-        boost::asio::io_service _io;
+        boost::asio::io_service& _io;
         tcp::resolver _resolver;
         tcp::resolver::iterator _endpoint;
         tcp::socket _socket;

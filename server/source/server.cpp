@@ -3,9 +3,9 @@
 #include <cstdlib>
 
 namespace chat {
-    server::server(const std::string& port)
+    server::server(boost::asio::io_service& io, const std::string& port)
         :_port(atoi(port.c_str()))
-        ,_io(1)
+        ,_io(io)
         ,_socket(_io)
         ,_endpoint(tcp::v4(), _port)
         ,_acceptor(_io, _endpoint)

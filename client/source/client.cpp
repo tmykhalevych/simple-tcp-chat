@@ -10,8 +10,8 @@
 #endif
 
 namespace chat {
-    client::client(std::string host, std::string port)
-        : _io(1)
+    client::client(boost::asio::io_service& io, std::string host, std::string port)
+        : _io(io)
         , _socket(_io)
         , _resolver(_io)
         , _last_exp()

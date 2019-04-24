@@ -19,6 +19,7 @@ namespace chat {
         std::ostringstream oss;
         oss << _socket.remote_endpoint().address().to_string() << ":" << _socket.remote_endpoint().port();
         _client_addr = oss.str();
+        memset(_header_buff, 0, _header_buff_size);
     }
 
     connection::~connection() {

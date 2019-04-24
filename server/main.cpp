@@ -19,7 +19,10 @@ int main(int argc, char** argv)
 
     try {
         LOG_GLOBAL_MSG("Start chatting server on " + server_port + " port...")
-        chat::server server(server_port);
+
+        boost::asio::io_service io;
+
+        chat::server server(io, server_port);
         server.run();
     }
     catch (chat::exception& exp) {

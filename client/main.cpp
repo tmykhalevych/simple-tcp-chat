@@ -24,8 +24,9 @@ int main(int argc, char** argv)
     }
 
     try {
-        // TODO: Add configuring host
-        chat::client client(server_host, server_port);
+        boost::asio::io_service io;
+
+        chat::client client(io, server_host, server_port);
         std::ostringstream log;
         log << "Start client. Try to connect to " << server_host << ":" << server_port << "...";
         LOG_GLOBAL_MSG(log.str())
