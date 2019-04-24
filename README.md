@@ -46,6 +46,14 @@ To clean all build artifacts run (you can use `--clean` argument instead of `-c`
 ./build.sh server -c
 ./build.sh client -c
 ```
+To include runtime STDOUT logging, uncomment following lines in [server/CMakeLists.txt](./server/CMakeLists.txt) and/or [client/CMakeLists.txt](./client/CMakeLists.txt) files (or define _LOG_ON):
+```sh
+# Enable logging
+#add_definitions(-D_LOG_ON)
+#add_definitions(-D_SCOPE_LOG_ON)
+```
+_SCOPE_LOG_ON macro enables output from the scope logs, _SCOPE_LOG macro enable all kind of logs.
+
 ## Configuration
 
 Default solution configurations are defined in [server/include/config.h](./server/include/config.h).
@@ -58,4 +66,30 @@ But, you can specify basic client/server configuration as params:
 2. Specify server host and port when running client:
 ```sh
 ./client/buid/bin/tcp-chat-client <server_host> <server_port>
+```
+
+## Usage
+
+1. Client at startup should setup its name and server password. When client joins server, message with client name is broadcasted:
+```sh 
+Please enter your nickname: taras
+Please enter the room password: 1234
+[ROOM] New participant joined the room. Welcome @taras
+```
+
+2. Client is able to send public messages - just type and press enter button, also client can send private message to other user - the template is: `@user_name private_message`:
+```sh
+[ROOM] New participant joined the room. Welcome @vlad
+[vlad] heey
+[vlad:private] Hi taras, here is some private info
+```
+
+3. Client with name `Admin` can send a message in format: `@kick user_name` which disconnects client `user_name` if it exists:
+```
+Please enter your nickname: Admin
+Please enter the room password: 1234
+[ROOM] New participant joined the room. Welcome @Admin
+I'm gonna kick vlad
+@kick vlad
+[ROOM] Participant @vlad has been kicked from the room. Good bye.
 ```
