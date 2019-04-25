@@ -28,7 +28,7 @@ It could take a while)
 
 ## Build client/server
 
-To bild server, run:
+To build server, run:
 ```sh
 ./build.sh server
 ```
@@ -70,14 +70,14 @@ But, you can specify basic client/server configuration as params:
 
 ## Usage
 
-1. Client at startup should setup its name and server password. When client joins server, message with client name is broadcasted:
+1. Client at startup should set up its name and server password. When the client joins the server, a message with client name is broadcasted:
 ```sh 
 Please enter your nickname: taras
 Please enter the room password: 1234
 [ROOM] New participant joined the room. Welcome @taras
 ```
 
-2. Client is able to send public messages - just type and press enter button, also client can send private message to other user - the template is: `@user_name private_message`:
+2. Client is able to send public messages - just type and press enter button, also a client can send a private message to another user - the template is: `@user_name private_message`:
 ```sh
 [ROOM] New participant joined the room. Welcome @vlad
 [vlad] heey
@@ -91,5 +91,5 @@ Please enter the room password: 1234
 [ROOM] New participant joined the room. Welcome @Admin
 I'm gonna kick vlad
 @kick vlad
-[ROOM] Participant @vlad has been kicked from the room. Good bye.
+[ROOM] Participant @vlad has been kicked from the room. Goodbye.
 ```
