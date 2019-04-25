@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10.2)
 project(tcp-chat-server)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -pthread")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
 # Enable logging
 add_definitions(-D_LOG_ON)
