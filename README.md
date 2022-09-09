@@ -1,4 +1,4 @@
-# tcp-chat
+# simple-tcp-chat
 ### Client/server solution for chatting
 
 
