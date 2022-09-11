@@ -1,6 +1,9 @@
 # simple-tcp-chat
 ### Client/server solution for chatting
 
+This is just a test task for my SDE (C++) positionb back in 2019. It took several hours of work and not ment to be the nicest code ever 😂.
+I just wanna keep that here because I've got that job 🤣 ands that is a great memory.
+
 
 ## General pre-build steps
 
